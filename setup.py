@@ -12,7 +12,7 @@ setup(
     #url="https://github.com/classner/pymp",
     #download_url="https://github.com/classner/pymp/tarball/v{0}".format(VERSION),
     packages = {'HoughVG'},
-    description = 'Une boîte à outils pour la Transformée de Hough',
+    description = 'Une boîte à outils de la Transformée de Hough',
     #readme=README.md
     install_requires=['numpy>=1.24.2','opencv-contrib-python>=4.7.0.72','pymp-pypi>=0.5.0','matplotlib>=3.6.3', 'scipy>=1.10.1','scikit-image>=0.21.0'],
     #long_description = open(os.path.join(os.path.dirname(__file__), 'README')).read(),
