@@ -3,9 +3,9 @@ HoughVG is a Hough transform toolbox for straight-lines detection and fingerprin
 ## Requirements 
 
 ### Environment
-
+HoughVG only works on Unix operating systems.
 ### Additional packages
-
+python3, numpy, opencv, tkinter, matplotlib, pymp, scikit, scipy
 ## Installation
 
 ## Using GUI
