@@ -418,65 +418,81 @@ def skeletonize(image_input):
 
 # Transformée de hough adaptée
 
-def Hough_Transform(template1,template2,td_long,td_larg,tr):
-    # Nombre de minuties dans les deux ensembles
-    N=len(template1)
-    M=len(template2)
-    
-    liste=[] # Liste pour stocker les paires de minuties correspondantes
-    
+def THG(template1,template2,td_long,td_larg,tr):
+    accum = np.zeros((td_long, td_larg, tr))  # Initialisation de l'accumulateur
+    N = len(template1)
+    M = len(template2)
+    liste = []
     for i in range(N):
-            for j in range(M):
-                # Récupération des coordonnées et orientations des minuties
-                tab1=template1[i]
-                tab2=template2[j]
-                theta1=tab1[2]
-                theta2=float(tab2[2]) 
-                x0=np.asarray(tab1[0])
-                y0=np.asarray(tab1[1])
-                x1=np.asarray(float(tab2[0]))
-                y1=np.asarray(float(tab2[1]))
+        for j in range(M):
+            tab1 = template1[i]
+            tab2 = template2[j]
 
-                # Conversion des angles en degrés
-                theta1=math.degrees(theta1)
-                theta2=math.degrees(theta2)
+            # Vérifier et convertir les angles en flottants, ou ignorer si ce n'est pas possible
+            try:
+                theta1 = float(math.degrees(float(tab1[2])))
+                theta2 = float(math.degrees(float(tab2[2])))
+            except (ValueError, TypeError):
+                continue  # Ignorer cette paire de minuties si une conversion échoue
 
-                # Calcul de la différence d'angle
-                Delta_theta= min(abs(theta1-theta2),360-abs(theta1-theta2))
-                Dx=x0-x1*math.cos(Delta_theta)-y1*math.sin(Delta_theta)
-                Dy=y0+x1*math.sin(Delta_theta)-y1*math.cos(Delta_theta)
-            
-                Delta_theta=math.degrees(Delta_theta)
+            # Calcul de Delta_theta
+            Delta_theta = min(abs(theta1 - theta2), 360 - abs(theta1 - theta2))
 
-                # Vérification des conditions pour considérer une paire de minuties
-                if (Dx>=0 and Dx<td_larg) and (Dy>=0 and Dy<td_long) and (Delta_theta<tr):
-                    liste.append({i,j})
+            # Conversion en float pour les coordonnées
+            try:
+                x0, y0 = map(float, tab1[:2])
+                x1, y1 = map(float, tab2[:2])
+            except (ValueError, TypeError):
+                continue  # Ignorer cette paire si les coordonnées ne sont pas des nombres réels
 
-# Score de similarité
-                  
-    score=(len(liste)*len(liste))/(N*M)
-         
-    return score, liste
-  
+            Dx = x0 - x1 * math.cos(math.radians(Delta_theta)) - y1 * math.sin(math.radians(Delta_theta))
+            Dy = y0 + x1 * math.sin(math.radians(Delta_theta)) - y1 * math.cos(math.radians(Delta_theta))
 
-def fingerprint(Template_Path,DataBase_path,seuil_long,seuil_larg,seuil_rot):
+            if (0 <= Dx < td_larg) and (0 <= Dy < td_long) and (Delta_theta < tr):
+                accum[int(Dy), int(Dx), int(Delta_theta)] += 1  # Mettre à jour la matrice d'accumulation
+                liste.append((i, j))
+    
+    score = len(liste) / (N)  # Calcul du score de similarité
+    return accum, score, liste
+
+
+# Fonction pour trouver les correspondances entre les minuties en utilisant l'accumulateur
+def find_correspondences(template1, template2, accum, threshold):
+    correspondences = []
+    for i, minutiae1 in enumerate(template1):
+        for j, minutiae2 in enumerate(template2):
+            try:
+                theta1, theta2 = math.degrees(float(minutiae1[2])), math.degrees(float(minutiae2[2]))
+                x0, y0 = float(minutiae1[0]), float(minutiae1[1])
+                x1, y1 = float(minutiae2[0]), float(minutiae2[1])
+            except (ValueError, TypeError):
+                continue  # Ignorer cette paire de minuties si des valeurs non numériques sont présentes
+
+            Delta_theta = min(abs(theta1 - theta2), 360 - abs(theta1 - theta2))
+            Dx = x0 - x1 * math.cos(math.radians(Delta_theta)) - y1 * math.sin(math.radians(Delta_theta))
+            Dy = y0 + x1 * math.sin(math.radians(Delta_theta)) - y1 * math.cos(math.radians(Delta_theta))
+
+            if (0 <= Dx < accum.shape[1]) and (0 <= Dy < accum.shape[0]) and (Delta_theta < accum.shape[2]):
+                if accum[int(Dy), int(Dx), int(Delta_theta)] >= threshold:
+                    correspondences.append((i, j))
+    
+    return correspondences
+
+
+
+def fingerprint(Template_Path,DataBase_path,seuil_long,seuil_larg,seuil_rot, Sc, precision):
+    
     # Définition de la taille des blocs pour les images segmentées
     block_size = 16
-
     # Récupération du nombre de fichiers dans les répertoires de modèles et de base de données
     size2, = np.shape(os.listdir(Template_Path))
     size1, =np.shape(os.listdir(DataBase_path))
-
     # Initialisation des listes pour stocker les noms de fichiers
     Filename = [1]*size2 
     filename = [1]*size1 
-
     # Compteurs pour itérer sur les fichiers
     count1=0
     count2=0
-
-    # Initialisation des scores pour chaque modèle
-    score = [0]*size2
     
     # Chargement des noms de fichiers dans les listes correspondantes
     for file in os.listdir(DataBase_path):
@@ -485,59 +501,60 @@ def fingerprint(Template_Path,DataBase_path,seuil_long,seuil_larg,seuil_rot):
     for file in os.listdir(Template_Path):
         Filename[count2]=file
         count2+=1
+    
     for i in range(size2):
-
         # Chargement et prétraitement de l'image modèle
         im= cv.imread(Template_Path+'/'+Filename[i],0)
+        
         normalized_img = normalize(im,float(100),float(100)) # normalisation
         _, norm_img, mask=create_segmented_and_variance_images(normalized_img, block_size, 0.2)
         angles = calculate_angles(normalized_img, block_size, smoth=False)
         freq = ridge_freq(norm_img, mask, angles, block_size, kernel_size=5, minWaveLength=5, maxWaveLength=15)
         gabor_img = gabor_filter(norm_img, angles, freq)
         thin_image = skeletonize(gabor_img) # squeletisation
-        _, minutiae1= feature(thin_image) # Extraction des minuties
+        _, minutiae1 = feature(thin_image) # Extraction des minuties
         
-        k=0  # Initialisation de la variable score
-
+        h1=0
         # Comparaison des minuties 
         for j in range(size1):
+            t1=time.time()
+            
             minutiae2 = np.load(DataBase_path+'/'+filename[j]).tolist()
-            score[i],liste=Hough_Transform(minutiae1,minutiae2,seuil_long,seuil_larg,seuil_rot)
-            if (score[i]>k):
-                k=score[i]
-            if (len(liste)>=10):
-                b=b+1
+            
+            accum,score,liste=THG(minutiae1,minutiae2,seuil_long,seuil_larg,seuil_rot)
+            # Trouver les correspondances avec un seuil de 1
+            correspondences = find_correspondences(minutiae1, minutiae2, accum, 1)
+            # Recherche du vote important dans la matrice d'accumulation
 
-        # Retourne le score maximum et un indicateur de correspondance
-        if (k<0.7)  :
-            return k, 0
-        else:
-            return k, 1
-   
+            minuties_correspondant_dans_accum1 = len(correspondences)
+            if minuties_correspondant_dans_accum1>= Sc:# Seuil de similarité
+                if precision: print(f"Empreintes identifié B1 {Filename[i]} et {filename[j]}: avec un score de similarité de {score}")   
+                #k=score[i]
+                h1=1
+            else:
+                o=0
+                if precision: print(f"Empreintes non identifié B1 {Filename[i]} et {filename[j]}: avec un score de similarité de {score}")   
 
+        if h1==1 :   
+            return 1         
+          
+        else: 
+            return 0    
 
-def fingerprintP(Template_Path,DataBase_path,seuil_long,seuil_larg,seuil_rot,n_cpu):
-    # Activation du support pour les parallélismes imbriqués dans pymp
-    pymp._config.nested=True
-
+def fingerprint_VG(Template_Path,DataBase_path,seuil_long,seuil_larg,seuil_rot, Sc, precision):
+    
     # Définition de la taille des blocs pour les images segmentées
     block_size = 16
-
     # Récupération du nombre de fichiers dans les répertoires de modèles et de base de données
     size2, = np.shape(os.listdir(Template_Path))
     size1, =np.shape(os.listdir(DataBase_path))
-
     # Initialisation des listes pour stocker les noms de fichiers
     Filename = [1]*size2 
     filename = [1]*size1 
-
     # Compteurs pour itérer sur les fichiers
     count1=0
     count2=0
-
-    # Initialisation des scores pour chaque modèle
-    score = [0]*size2
-
+    
     # Chargement des noms de fichiers dans les listes correspondantes
     for file in os.listdir(DataBase_path):
         filename[count1]=file
@@ -545,41 +562,179 @@ def fingerprintP(Template_Path,DataBase_path,seuil_long,seuil_larg,seuil_rot,n_c
     for file in os.listdir(Template_Path):
         Filename[count2]=file
         count2+=1
+    
+    for i in range(size2):
+        # Chargement et prétraitement de l'image modèle
+        im= cv.imread(Template_Path+'/'+Filename[i],0)
 
+        # Division de l'image en blocs
+        num_blocks = 2
+        block_height = math.ceil(im.shape[0] / num_blocks)
+        block_width = math.ceil(im.shape[1] / num_blocks)
+        
+        blocks = [im[i * block_height:(i + 1) * block_height, j * block_width:(j + 1) * block_width]
+                for i in range(num_blocks) for j in range(num_blocks)]
+
+        
+        normalized_img = normalize(im,float(100),float(100)) # normalisation
+        _, norm_img, mask=create_segmented_and_variance_images(normalized_img, block_size, 0.2)
+        angles = calculate_angles(normalized_img, block_size, smoth=False)
+        freq = ridge_freq(norm_img, mask, angles, block_size, kernel_size=5, minWaveLength=5, maxWaveLength=15)
+        gabor_img = gabor_filter(norm_img, angles, freq)
+        thin_image = skeletonize(gabor_img) # squeletisation
+        _, minutiae1 = feature(thin_image) # Extraction des minuties
+        
+        milieu=len(minutiae1)//2
+        k=0 # Initialisation de la variable score
+        h1=0          
+        Blocks1 = minutiae1[:milieu]
+
+        Blocks2 = minutiae1[milieu:]
+        
+        # Comparaison des minuties 
+        for j in range(size1):
+            t1=time.time()
+            
+            minutiae2 = np.load(DataBase_path+'/'+filename[j]).tolist()
+            def process_block1(Blocks1, minutiae2):
+                accum,score,liste=THG(Blocks1,minutiae2,seuil_long,seuil_larg,seuil_rot)
+                # Trouver les correspondances avec un seuil de 1
+                correspondences = find_correspondences(Blocks1, minutiae2, accum, 1)
+                # Recherche du vote important dans la matrice d'accumulation
+                return correspondences, score
+            
+            Blocks=[]
+            Blocks= Blocks1, Blocks2
+            for block in Blocks1, Blocks2 :
+                
+                if block==Blocks1 :
+                    correspondences,score = process_block1(block, minutiae2)
+                    minuties_correspondant_dans_accum = len(correspondences)
+                    b=1
+                    if minuties_correspondant_dans_accum>= Sc :# Seuil de similarité
+                        if precision : print(f"Empreintes identifié B{b} {Filename[i]} et {filename[j]}: avec un score de similarité de {score}")   
+                        h1=1
+                else: 
+                    b=2
+                    if h1==0 :
+                        correspondences,score = process_block1(block, minutiae2)
+                        minuties_correspondant_dans_accum = len(correspondences)
+                        if minuties_correspondant_dans_accum>= Sc :# Seuil de similarité
+                            if precision: print(f"Empreintes identifié B{b} {Filename[i]} et {filename[j]}: avec un score de similarité de {score}")   
+                            #k=score1
+                            #v1=1
+                            h1=1
+                        else: 
+                            o=1
+                            if precision: print(f"Empreintes non identifié B{b} {Filename[i]} et {filename[j]}: avec un score de similarité de {score}")   
+     
+        if h1==1 :   
+            return 1         
+          
+        else: 
+            return 0   
+
+
+def fingerprint_VGP(Template_Path,DataBase_path,seuil_long,seuil_larg,seuil_rot,Sc,n_cpu,precision):
+    # Activation du support pour les parallélismes imbriqués dans pymp
+    pymp._config.nested=True
+    # Définition de la taille des blocs pour les images segmentées
+    block_size = 16
+    # Récupération du nombre de fichiers dans les répertoires de modèles et de base de données
+    size2, = np.shape(os.listdir(Template_Path))
+    size1, =np.shape(os.listdir(DataBase_path))
+    # Initialisation des listes pour stocker les noms de fichiers
+    Filename = [1]*size2 
+    filename = [1]*size1 
+    # Compteurs pour itérer sur les fichiers
+    count1=0
+    count2=0
+    # Initialisation des scores pour chaque modèle
+    score = [0]*size2
+    # Chargement des noms de fichiers dans les listes correspondantes
+    for file in os.listdir(DataBase_path):
+        filename[count1]=file
+        count1+=1
+    for file in os.listdir(Template_Path):
+        Filename[count2]=file
+        count2+=1
     # Liste partagée pour stocker les résultats de chaque thread
-    results=pymp._shared.list([None]*n_cpu)
-
+    FingerprintP=pymp._shared.list([None]*n_cpu)
+    DBP=pymp._shared.list([None]*n_cpu)
+    FingerprintN=pymp._shared.list([None]*n_cpu)
+    DBN=pymp._shared.list([None]*n_cpu)
+    scoreP=pymp._shared.list([None]*n_cpu)
+    scoreN=pymp._shared.list([None]*n_cpu)
+    resultat=pymp._shared.list([None]*n_cpu)
     # Démarrage du traitement parallèle
-    with pymp.Parallel(n_cpu,if_=True) as p:
-        for i in range(size2):
+    
+    for i in range(size2):
+        # Chargement et prétraitement de l'image modèle
+        im= cv.imread(Template_Path+'/'+Filename[i],0)
 
-            # Chargement et prétraitement de l'image modèle
-            im= cv.imread(Template_Path+'/'+Filename[i],0)
-            normalized_img = normalize(im,float(100),float(100)) # normalisation
-            _, norm_img, mask=create_segmented_and_variance_images(normalized_img, block_size, 0.2)
-            angles = calculate_angles(normalized_img, block_size, smoth=False)
-            freq = ridge_freq(norm_img, mask, angles, block_size, kernel_size=5, minWaveLength=5, maxWaveLength=15)
-            gabor_img = gabor_filter(norm_img, angles, freq)
-            thin_image = skeletonize(gabor_img) # squeletisation
-            _, minutiae1 = feature(thin_image) # Extraction des minuties
+                    
+        normalized_img = normalize(im,float(100),float(100)) # normalisation
+        _, norm_img, mask=create_segmented_and_variance_images(normalized_img, block_size, 0.2)
+        angles = calculate_angles(normalized_img, block_size, smoth=False)
+        freq = ridge_freq(norm_img, mask, angles, block_size, kernel_size=5, minWaveLength=5, maxWaveLength=15)
+        gabor_img = gabor_filter(norm_img, angles, freq)
+        thin_image = skeletonize(gabor_img) # squeletisation
+        _, minutiae1 = feature(thin_image) # Extraction des minuties
+        
+        milieu=len(minutiae1)//2
+        k=0 # Initialisation de la variable score
+        h1=0        
+        Blocks1 = minutiae1[:milieu]
 
-            k=0 # Initialisation de la variable score
-
+        Blocks2 = minutiae1[milieu:]
+        with pymp.Parallel(n_cpu,if_=True) as p:
             # Comparaison des minuties 
             for j in p.range(size1):
-                minutiae2 = np.load(DataBase_path+'/'+filename[j]).tolist()
-                score[i],liste=Hough_Transform(minutiae1,minutiae2,seuil_long,seuil_larg,seuil_rot)
-                if (score[i]>k):
-                    k=score[i]
+                t1=time.time()
                 
-            # Stockage du meilleur score pour le thread courant
-            results[p.thread_num]=k
-    # Récupération des résultats finaux        
-    Resultats=results
-    k=max(Resultats)
-    # Retourne le score maximum et un indicateur de correspondance
-    if (k<0.7)  :
-        return k, 0
-        
-    else:
-        return k, 1
+                minutiae2 = np.load(DataBase_path+'/'+filename[j]).tolist()
+                def process_block1(Blocks1, minutiae2):
+                    accum,score,liste=THG(Blocks1,minutiae2,seuil_long,seuil_larg,seuil_rot)
+                    # Trouver les correspondances avec un seuil de  
+                    correspondences = find_correspondences(Blocks1, minutiae2, accum, 1)
+                    # Recherche du vote important dans la matrice d'accumulation
+                    return correspondences, score
+                
+                Blocks=[]
+                Blocks= Blocks1, Blocks2
+                for block in Blocks1, Blocks2 :
+                    
+                    if block==Blocks1 :
+                        correspondences,score = process_block1(block, minutiae2)
+                        minuties_correspondant_dans_accum = len(correspondences)
+                        b=1
+                        if minuties_correspondant_dans_accum>= Sc :# Seuil de similarité
+                            if precision : print(f"Empreintes identifié B{b} {Filename[i]} et {filename[j]}: avec un score de similarité de {score}")                         
+                            h1=1       
+                    else: 
+                        b=2
+                        if h1==0 :
+                            correspondences,score = process_block1(block, minutiae2)
+                            minuties_correspondant_dans_accum = len(correspondences)
+                            if minuties_correspondant_dans_accum>= Sc :# Seuil de similarité
+                                if precision: print(f"Empreintes identifié B{b} {Filename[i]} et {filename[j]}: avec un score de similarité de {score}")   
+                               
+                                h1=1
+                            else: 
+                                o=1
+                                if precision: print(f"Empreintes non identifié B{b} {Filename[i]} et {filename[j]}: avec un score de similarité de {score}")   
+                                
+            resultat[p.thread_num]=h1
+        resultats=resultat
+        h1=max(resultats)
+                        
+
+                        
+              
+        if h1==1 :   
+            return 1         
+          
+        else: 
+            return 0
+      
+
