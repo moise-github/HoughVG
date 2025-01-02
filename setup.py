@@ -7,7 +7,7 @@ setup(
     author="Moïse OUEDRAOGO",
     author_email="moisewedra@gmail.com",
     version=VERSION,
-    #url = 'http://mon_projet.org',
+    url = 'https://codeocean.com/capsule/9801492/tree',
     #license="MIT License",
     #url="https://github.com/classner/pymp",
     #download_url="https://github.com/classner/pymp/tarball/v{0}".format(VERSION),
