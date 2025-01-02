@@ -42,63 +42,63 @@ class HoughVGApp:
         button_width = 40
         button_height = 1
 
-        self.upload_button = Button(root, text="Charger une image", command=self.upload_image, width=button_width, height=button_height, bg='#4F4F4F', fg='#FFFFFF')
+        self.upload_button = Button(root, text="Upload an image", command=self.upload_image, width=button_width, height=button_height, bg='#4F4F4F', fg='#FFFFFF')
         self.upload_button.pack()
 
-        self.upload_fingerprint_button=Button(root,text="Test",command=self.upload_Test_fingerprints, width=button_width, height=button_height, bg='#4F4F4F', fg='#FFFFFF')
+        self.upload_fingerprint_button=Button(root,text="Fingerprint",command=self.upload_Test_fingerprints, width=button_width, height=button_height, bg='#4F4F4F', fg='#FFFFFF')
         self.upload_fingerprint_button.pack()
         
 
-        self.upload_BD_button=Button(root,text="BD",command=self.upload_BD_fingerprints, width=button_width, height=button_height, bg='#4F4F4F', fg='#FFFFFF')
+        self.upload_BD_button=Button(root,text="DB",command=self.upload_BD_fingerprints, width=button_width, height=button_height, bg='#4F4F4F', fg='#FFFFFF')
         self.upload_BD_button.pack()
 
         self.process_fingerprint_button=Button(root,text="Identification",command=self.THG_fingerprint, width=button_width, height=button_height, bg='#4F4F4F', fg='#FFFFFF')
         self.process_fingerprint_button.pack()
 
         #Button to save the processed image
-        self.save_button=Button(root,text="Sauvegarder", command=self.save_image, width=button_width, height=button_height, bg='#4F4F4F', fg='#FFFFFF')
+        self.save_button=Button(root,text="Save", command=self.save_image, width=button_width, height=button_height, bg='#4F4F4F', fg='#FFFFFF')
         self.save_button.pack()
 
         # Radio buttons for main method
         self.main_method_var = IntVar()
         self.main_method_var.set(1)  # Default to Lines Detection
-        self.lines_detection_radio = Radiobutton(root, text="Détection de droites", variable=self.main_method_var, value=1, command=self.select_main_method, width=button_width, height=button_height, bg='#2E2E2E', fg='#FFFFFF', selectcolor='#4F4F4F')
+        self.lines_detection_radio = Radiobutton(root, text="Straight-Lines detection", variable=self.main_method_var, value=1, command=self.select_main_method, width=button_width, height=button_height, bg='#2E2E2E', fg='#FFFFFF', selectcolor='#4F4F4F')
         self.lines_detection_radio.pack()
-        self.fingerprint_detection_radio = Radiobutton(root, text="Reconnaissance d'empreintes digitales", variable=self.main_method_var, value=2, command=self.select_main_method, width=button_width, height=button_height, bg='#2E2E2E', fg='#FFFFFF', selectcolor='#4F4F4F')
+        self.fingerprint_detection_radio = Radiobutton(root, text="Fingerprints recognition", variable=self.main_method_var, value=2, command=self.select_main_method, width=button_width, height=button_height, bg='#2E2E2E', fg='#FFFFFF', selectcolor='#4F4F4F')
         self.fingerprint_detection_radio.pack()
 
 
         # Radio buttons for method selection sequentiel
         self.method_var = IntVar()
-        self.THR_line_method_radio = Radiobutton(root, text="Transformée de Hough Rectangulaire", variable=self.method_var, value=1, command=self.select_method, width=button_width, height=button_height, bg='#2E2E2E', fg='#FFFFFF', selectcolor='#4F4F4F')
+        self.THR_line_method_radio = Radiobutton(root, text="Rectangular Hough Transform", variable=self.method_var, value=1, command=self.select_method, width=button_width, height=button_height, bg='#2E2E2E', fg='#FFFFFF', selectcolor='#4F4F4F')
         #self.THR_line_method_radio.pack()
 
-        self.THT_line_method_radio = Radiobutton(root, text="Transformée de Hough Triangulaire", variable=self.method_var, value=2, command=self.select_method, width=button_width, height=button_height, bg='#2E2E2E', fg='#FFFFFF', selectcolor='#4F4F4F')
+        self.THT_line_method_radio = Radiobutton(root, text="Triangular Hough Transform", variable=self.method_var, value=2, command=self.select_method, width=button_width, height=button_height, bg='#2E2E2E', fg='#FFFFFF', selectcolor='#4F4F4F')
         #self.THT_line_method_radio.pack()
 
-        self.THH_line_method_radio = Radiobutton(root, text="Transformée de Hough Hexagonale", variable=self.method_var, value=3, command=self.select_method, width=button_width, height=button_height, bg='#2E2E2E', fg='#FFFFFF', selectcolor='#4F4F4F')
+        self.THH_line_method_radio = Radiobutton(root, text="Hexagonal Hough Transform", variable=self.method_var, value=3, command=self.select_method, width=button_width, height=button_height, bg='#2E2E2E', fg='#FFFFFF', selectcolor='#4F4F4F')
         #self.THH_line_method_radio.pack()
 
-        self.THO_line_method_radio = Radiobutton(root, text="Transformée de Hough Octogonale", variable=self.method_var, value=4, command=self.select_method, width=button_width, height=button_height, bg='#2E2E2E', fg='#FFFFFF', selectcolor='#4F4F4F')
+        self.THO_line_method_radio = Radiobutton(root, text="Octogonal Hough Transform", variable=self.method_var, value=4, command=self.select_method, width=button_width, height=button_height, bg='#2E2E2E', fg='#FFFFFF', selectcolor='#4F4F4F')
         #self.THO_line_method_radio.pack()
 
-        self.fingerprint_radio = Radiobutton(root, text="Identification d'empreintes", variable=self.method_var, value=5, command=self.select_method, width=button_width, height=button_height, bg='#2E2E2E', fg='#FFFFFF', selectcolor='#4F4F4F')
+        self.fingerprint_radio = Radiobutton(root, text="Virtual Grid Method", variable=self.method_var, value=5, command=self.select_method, width=button_width, height=button_height, bg='#2E2E2E', fg='#FFFFFF', selectcolor='#4F4F4F')
         #self.fingerprint_radio.pack()
 
         # Radio buttons for method selection parallèle
-        self.THRP_line_method_radio = Radiobutton(root, text="Transformée de Hough Rectangulaire Parallélisée", variable=self.method_var, value=6, command=self.select_method, width=button_width, height=button_height, bg='#2E2E2E', fg='#FFFFFF', selectcolor='#4F4F4F')
+        self.THRP_line_method_radio = Radiobutton(root, text="Parallized Rectangular Hough Transform", variable=self.method_var, value=6, command=self.select_method, width=button_width, height=button_height, bg='#2E2E2E', fg='#FFFFFF', selectcolor='#4F4F4F')
         #self.THRP_line_method_radio.pack()
 
-        self.THTP_line_method_radio = Radiobutton(root, text="Transformée de Hough Triangulaire Parallélisée", variable=self.method_var, value=7, command=self.select_method, width=button_width, height=button_height, bg='#2E2E2E', fg='#FFFFFF', selectcolor='#4F4F4F')
+        self.THTP_line_method_radio = Radiobutton(root, text="Parallized Triangular Hough Transform", variable=self.method_var, value=7, command=self.select_method, width=button_width, height=button_height, bg='#2E2E2E', fg='#FFFFFF', selectcolor='#4F4F4F')
         #self.THTP_line_method_radio.pack()
 
-        self.THHP_line_method_radio = Radiobutton(root, text="Transformée de Hough Hexagonale Parallélisée", variable=self.method_var, value=8, command=self.select_method, width=button_width, height=button_height, bg='#2E2E2E', fg='#FFFFFF', selectcolor='#4F4F4F')
+        self.THHP_line_method_radio = Radiobutton(root, text="Parallized Hexagonal Hough Transform", variable=self.method_var, value=8, command=self.select_method, width=button_width, height=button_height, bg='#2E2E2E', fg='#FFFFFF', selectcolor='#4F4F4F')
         #self.THHP_line_method_radio.pack()
 
-        self.THOP_line_method_radio = Radiobutton(root, text="Transformée de Hough Octogonale Parallélisée", variable=self.method_var, value=9, command=self.select_method, width=button_width, height=button_height, bg='#2E2E2E', fg='#FFFFFF', selectcolor='#4F4F4F')
+        self.THOP_line_method_radio = Radiobutton(root, text="Parallized Octogonal Hough Transform", variable=self.method_var, value=9, command=self.select_method, width=button_width, height=button_height, bg='#2E2E2E', fg='#FFFFFF', selectcolor='#4F4F4F')
         #self.THOP_line_method_radio.pack()
 
-        self.fingerprintP_radio = Radiobutton(root, text="Identification d'empreintes Parallélisée ", variable=self.method_var, value=10, command=self.select_method, width=button_width, height=button_height, bg='#2E2E2E', fg='#FFFFFF', selectcolor='#4F4F4F')
+        self.fingerprintP_radio = Radiobutton(root, text="Hybrid Method", variable=self.method_var, value=10, command=self.select_method, width=button_width, height=button_height, bg='#2E2E2E', fg='#FFFFFF', selectcolor='#4F4F4F')
         #self.fingerprintP_radio.pack()
 
         # Sliders for THR Line parameters
@@ -196,6 +196,14 @@ class HoughVGApp:
         self.n_cpu_label = Label(root, text="Nombre de processus:", bg='#2E2E2E', fg='#FFFFFF')
         self.n_cpu_slider = Scale(root, from_=1, to=os.cpu_count(), orient=HORIZONTAL, command=self.update_detection, bg='#6E6E6E', fg='#000000', troughcolor='#4F4F4F')
 
+        self.n_cpuF_label = Label(root, text="Nombre de processus:", bg='#2E2E2E', fg='#FFFFFF')
+        self.n_cpuF_slider = Scale(root, from_=1, to=os.cpu_count(), orient=HORIZONTAL, command=self.update_fingerprint, bg='#6E6E6E', fg='#000000', troughcolor='#4F4F4F')
+
+
+        self.Sc_label = Label(root, text="Seuil de correspondance:", bg='#2E2E2E', fg='#FFFFFF')
+        self.Sc_slider = Scale(root, from_=1, to=10, orient=HORIZONTAL, command=self.update_fingerprint, bg='#6E6E6E', fg='#000000', troughcolor='#4F4F4F')
+
+
         # Label to display identification of fingerprints
         self.identification_message_label = Label(root, text="", bg='#4F4F4F', fg='#FFFFFF')
         self.identification_message_label.pack()
@@ -274,6 +282,14 @@ class HoughVGApp:
         self.n_cpu_slider.bind('<FocusIn>', self.activer_raccourcis_n_cpu_slider)
         self.n_cpu_slider.bind('<FocusOut>', self.desactiver_raccourcis)
         self.n_cpu_slider.bind('<Button-1>', self.donner_focus)
+
+        self.n_cpuF_slider.bind('<FocusIn>', self.activer_raccourcis_n_cpuF_slider)
+        self.n_cpuF_slider.bind('<FocusOut>', self.desactiver_raccourcis)
+        self.n_cpuF_slider.bind('<Button-1>', self.donner_focus)
+
+        self.Sc_slider.bind('<FocusIn>', self.activer_raccourcis_Sc_slider)
+        self.Sc_slider.bind('<FocusOut>', self.desactiver_raccourcis)
+        self.Sc_slider.bind('<Button-1>', self.donner_focus)
         #associer les touches fléchées aux fonctions de déplacement du curseur line_THRP_threshold_slider
         self.line_THRP_threshold_slider.bind('<FocusIn>', self.activer_raccourcis_line_THRP_threshold_slider)
         self.line_THRP_threshold_slider.bind('<FocusOut>', self.desactiver_raccourcis)
@@ -398,6 +414,14 @@ class HoughVGApp:
     def activer_raccourcis_n_cpu_slider(self, event):
         self.root.bind('<Left>', self.deplacer_gauche_n_cpu_slider)
         self.root.bind('<Right>', self.deplacer_droite_n_cpu_slider)
+
+    def activer_raccourcis_n_cpuF_slider(self, event):
+        self.root.bind('<Left>', self.deplacer_gauche_n_cpuF_slider)
+        self.root.bind('<Right>', self.deplacer_droite_n_cpuF_slider)
+
+    def activer_raccourcis_Sc_slider(self, event):
+        self.root.bind('<Left>', self.deplacer_gauche_Sc_slider)
+        self.root.bind('<Right>', self.deplacer_droite_Sc_slider)
 
     def activer_raccourcis_line_THRP_threshold_slider(self, event):
         #associer les touches fléchées aux fonctions de déplacement du curseur line_THR_threshold_slider
@@ -618,6 +642,28 @@ class HoughVGApp:
         nouvelle_valeur=self.n_cpu_slider.get()+1
         if nouvelle_valeur<=self.n_cpu_slider.cget('to'):
             self.n_cpu_slider.set(nouvelle_valeur)
+
+    def deplacer_gauche_n_cpuF_slider(self,event):
+        #deplacer le curseur line_THRP_threshold_slider vers la gauche
+        nouvelle_valeur=self.n_cpuF_slider.get()-1
+        if nouvelle_valeur>=self.n_cpuF_slider.cget('from'):
+            self.n_cpuF_slider.set(nouvelle_valeur)
+    def deplacer_droite_n_cpuF_slider(self,event):
+        #deplacer le curseur line_THRP_threshold_slider vers la droite
+        nouvelle_valeur=self.n_cpuF_slider.get()+1
+        if nouvelle_valeur<=self.n_cpuF_slider.cget('to'):
+            self.n_cpuF_slider.set(nouvelle_valeur)
+
+    def deplacer_gauche_Sc_slider(self,event):
+        #deplacer le curseur line_THRP_threshold_slider vers la gauche
+        nouvelle_valeur=self.Sc_slider.get()-1
+        if nouvelle_valeur>=self.Sc_slider.cget('from'):
+            self.Sc_slider.set(nouvelle_valeur)
+    def deplacer_droite_Sc_slider(self,event):
+        #deplacer le curseur line_THRP_threshold_slider vers la droite
+        nouvelle_valeur=self.Sc_slider.get()+1
+        if nouvelle_valeur<=self.Sc_slider.cget('to'):
+            self.Sc_slider.set(nouvelle_valeur)
 
     def deplacer_gauche_line_THRP_threshold_slider(self,event):
         #deplacer le curseur line_THRP_threshold_slider vers la gauche
@@ -840,7 +886,11 @@ class HoughVGApp:
                 self.THHP_detect_lines()
             elif self.selected_method == "THOP":
                 self.THOP_detect_lines()
-
+    def update_fingerprint(self, _=None):
+        if self.selected_method == "fingerprintVG":
+                self.THG_fingerprint()
+        if self.selected_method == "fingerprintVGP":
+                self.THG_fingerprint()
     def hide_all_sliders(self):
         self.upload_button.pack_forget()
         self.save_button.pack_forget()
@@ -895,6 +945,12 @@ class HoughVGApp:
         ####################PARALLÈLE###################
         self.n_cpu_label.pack_forget()
         self.n_cpu_slider.pack_forget()
+
+        self.n_cpuF_label.pack_forget()
+        self.n_cpuF_slider.pack_forget()
+
+        self.Sc_label.pack_forget()
+        self.Sc_slider.pack_forget()
 
         self.line_THRP_threshold_label.pack_forget()
         self.line_THRP_threshold_slider.pack_forget()
@@ -976,7 +1032,7 @@ class HoughVGApp:
         if main_method_value == 1:  # Lines Detection
             self.show_line_buttons()
             self.hide_fingerprint_button()
-        elif main_method_value == 2:  # Circles Detection
+        elif main_method_value == 2:  # fingerprint recognition
             self.hide_line_buttons()
             self.show_fingerprint_button()
 
@@ -1047,10 +1103,13 @@ class HoughVGApp:
             self.line_THO_gamma_label.pack()
             self.line_THO_gamma_slider.pack()
         elif method_value == 5:
-            self.selected_method = "fingerprint"
+            self.selected_method = "fingerprintVG"
+            self.Sc_label.pack()
+            self.Sc_slider.pack()
             self.upload_BD_button.pack()
             self.upload_fingerprint_button.pack()
             self.process_fingerprint_button.pack()
+            
         elif method_value == 6:
             self.selected_method = "THRP"
 
@@ -1126,10 +1185,13 @@ class HoughVGApp:
             self.line_THOP_gamma_label.pack()
             self.line_THOP_gamma_slider.pack()
         elif method_value == 10:
-            self.selected_method = "fingerprintP"
+            self.selected_method = "fingerprintVGP"
 
-            self.n_cpu_label.pack()
-            self.n_cpu_slider.pack()
+            self.n_cpuF_label.pack()
+            self.n_cpuF_slider.pack()
+
+            self.Sc_label.pack()
+            self.Sc_slider.pack()
 
             self.upload_BD_button.pack()
             self.upload_fingerprint_button.pack()
@@ -1270,7 +1332,6 @@ class HoughVGApp:
         L=self.line_THRP_L_slider.get()
         l=self.line_THRP_l_slider.get()
         n_cpu=self.n_cpu_slider.get()
-        n_cpu=3
         colors=(0,255,0)
         #gray = cv2.cvtColor(self.processed_image, cv2.COLOR_BGR2GRAY)
         edges = cv2.Canny(self.processed_image, 200, 500, apertureSize=3)
@@ -1395,41 +1456,50 @@ class HoughVGApp:
         self.display_images()   
 ###############################################################
     def THG_fingerprint(self):
-        if self.selected_method=="fingerprint":
+        if self.selected_method=="fingerprintVG":
             Test_Path=self.fingerprint_directory
             DataBase_path=self.DB_directory#Database_test
             seuil_long=10
             seuil_larg=10
             seuil_rot=5
+            Sc=self.Sc_slider.get()
+            precision=0
             start = time.time()
-            _, Bool=Fingerprint.fingerprint(Test_Path,DataBase_path,seuil_long=10,seuil_larg=10,seuil_rot=5)
+            
+            Bool=Fingerprint.fingerprint_VG(Test_Path,DataBase_path,seuil_long,seuil_larg,seuil_rot,Sc,precision)
             #print('resultats=', results)
             end = time.time()
             if Bool==1 :
-                self.identification_message_label.config(text=f"Emprint identifiée", fg="lime")
+                self.identification_message_label.config(text=f"Fingerprint identified", fg="lime")
                 self.identification_message_label.pack()
             elif Bool==0 :
-                self.identification_message_label.config(text=f"Emprint non identifiée", fg="red")
+                self.identification_message_label.config(text=f"Fingerprint unidentified", fg="red")
                 self.identification_message_label.pack()
-            print("Sequentiel:exécution time(en secondes): %f" %float( end - start)) 
-        elif self.selected_method=="fingerprintP":
+            print("Virtual Grid Method : execution time(sec): %f" %float( end - start)) 
+        elif self.selected_method=="fingerprintVGP":
             Test_Path=self.fingerprint_directory
             DataBase_path=self.DB_directory#Database_test
             seuil_long=10
             seuil_larg=10
             seuil_rot=5
-            n_cpu=self.n_cpu_slider.get()
+            
+            precision=0
+            n_cpu=self.n_cpuF_slider.get()
+            Sc=self.Sc_slider.get()
             start = time.time()
-            _, Bool=Fingerprint.fingerprintP(Test_Path,DataBase_path,seuil_long,seuil_larg,seuil_rot, n_cpu)
+            #if n_cpu < 1:
+            #    raise ValueError("Number of CPUs (n_cpu) must be at least 1.")
+
+            Bool=Fingerprint.fingerprint_VGP(Test_Path,DataBase_path,seuil_long,seuil_larg,seuil_rot,Sc,n_cpu,precision)
             #print('resultats=', results)
             end = time.time()
             if Bool==1 :
-                self.identification_message_label.config(text=f"Emprint identifiée", fg="lime")
+                self.identification_message_label.config(text=f"Fingerprint identified", fg="lime")
                 self.identification_message_label.pack()
             elif Bool==0 :
-                self.identification_message_label.config(text=f"Emprint non identifiée", fg="red")
+                self.identification_message_label.config(text=f"Fingerprint unidentified", fg="red")
                 self.identification_message_label.pack()
-            print("Parallel:exécution time(en secondes): %f" %float( end - start)) 
+            print("Hybrid Method:execution time(sec): %f" %float( end - start)) 
 
 
     def save_image (self):
@@ -1481,10 +1551,10 @@ class HoughVGApp:
                 gamma=self.line_THOP_gamma_slider.get()
                 save_path=(f"THOP_{name}_seuil{seuil}_alpha{alpha}_gamma{gamma}{ext}")
             cv2.imwrite(save_path, self.processed_image)
-            print(f"image sauvegarder sous {save_path}")
+            print(f"Image: saved as {save_path}")
 
         else:
-            print('image non disponible')
+            print('image not available')
                    
 
 if __name__ == "__main__":
