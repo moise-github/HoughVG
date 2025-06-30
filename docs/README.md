@@ -186,4 +186,37 @@ if matched:
 else:
     print("Fingerprint not identified")
 ```
+### Parallised fingerprints recognition using Virtual Grid
+```
+from HoughVG import Fingerprint
+# Paths
+test_path = "/home/moses/Bureau/Projet_HoughVG_software_impact_27_12_2024/data/fingerprint"
+database_path = "/home/moses/Bureau/Projet_HoughVG_software_impact_27_12_2024/data/Big_DB"
+
+# Threshold parameters
+length_threshold = 10
+width_threshold = 10
+rotation_threshold = 5
+n_cpu=3
+scale = 3
+precision = 0
+
+# Run fingerprint matching
+matched = Fingerprint.fingerprint_VGP(
+test_path, 
+database_path, 
+length_threshold, 
+width_threshold, 
+rotation_threshold, 
+scale,
+n_cpu, 
+precision
+)
+
+# Display result
+if matched:
+    print("Fingerprint identified")
+else:
+    print("Fingerprint not identified")
+```
 ## Using GUI
