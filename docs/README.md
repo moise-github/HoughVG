@@ -123,4 +123,19 @@ cv2.imwrite(os.path.join(output_folder, filename_base + '_lines.png'), img2)
 print("Results saved in :", os.path.abspath(output_folder))
 ```
 ### fingerprints recognition
+```
+from HoughVG import Fingerprint
+Test_Path="/home/moses/Bureau/Projet_HoughVG_software_impact_27_12_2024/data/fingerprint"
+DataBase_path= "/home/moses/Bureau/Projet_HoughVG_software_impact_27_12_2024/data/Big_DB"
+seuil_long=10
+seuil_larg=10
+seuil_rot=5
+Sc=3
+precision=0
+
+Bool=Fingerprint.fingerprint(Test_Path,DataBase_path,seuil_long,seuil_larg,seuil_rot,Sc,precision)
+
+if Bool: print("Emprint identifiée")
+else: print("Emprint non identifiée")
+```
 ## Using GUI
