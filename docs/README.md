@@ -18,7 +18,7 @@ import sys
 import os
 from HoughVG import HoughLine
 
-# === Paramètres ===
+# === Parameters ===
 Rate = 0.30
 gamma = 2
 Threshold = 53
@@ -26,39 +26,39 @@ EdgesThresholdMax = 500
 EdgesThresholdMin = 200
 colors = (0, 255, 0)
 
-# === Chemins ===
-# Chemin complet vers l’image
+# === Paths ===
+# Full path to the image
 image_path = r"C:\Users\win11\OneDrive\Bureau\8.jpeg"
 
-# Dossier de sortie des résultats
+# Output folder for results
 output_folder = os.path.join(os.path.dirname(__file__), '..', 'results')
 os.makedirs(output_folder, exist_ok=True)
 
-# === Chargement de l’image ===
+# === Load the image ===
 imge_Build = cv2.imread(image_path)
 if imge_Build is None:
-    print("[ERREUR] Image introuvable ou illisible :", image_path)
+    print("[ERROR] Image not found or unreadable:", image_path)
     sys.exit(1)
 else:
-    print("Image chargée avec succès :")
+    print("Image loaded successfully:")
 
-# === Prétraitement (Canny) ===
+# === Preprocessing (Canny) ===
 def ImgPreprocessing(imge, EdgesThresholdMin, EdgesThresholdMax):
     return cv2.Canny(imge, EdgesThresholdMin, EdgesThresholdMax, None, 3)
 
 img = ImgPreprocessing(imge_Build, EdgesThresholdMin, EdgesThresholdMax)
 
-# === Détection Hough Octogonale ===
+# === Application of OHT ===
 accum, accum_max, lines = HoughLine.Octogonal(img, gamma, Rate, Threshold)
 
-# === Affichage des résultats ===
+# === Display  results ===
 img2 = HoughLine.PlotHoughLine(imge_Build, lines, colors)
 cv2.imshow("Image affichée", img2)
-cv2.waitKey(0)  # attend une touche pour fermer la fenêtre
+cv2.waitKey(0)  
 cv2.destroyAllWindows()
 
-# === Sauvegarde des résultats ===
-filename_base = f'THO_Building_R{int(Rate*100)}_T{Threshold}_G{gamma}_C{EdgesThresholdMin}-{EdgesThresholdMax}'
+# === Save results ===
+filename_base = f'THO{int(Rate*100)}_T{Threshold}_G{gamma}_C{EdgesThresholdMin}-{EdgesThresholdMax}'
 
 cv2.imwrite(os.path.join(output_folder, filename_base + '_accum.png'), accum)
 cv2.imwrite(os.path.join(output_folder, filename_base + '_accum_max.png'), accum_max)
@@ -82,39 +82,39 @@ EdgesThresholdMin = 200
 colors = (0, 255, 0)
 n_cpu = 3
 
-# === Chemins ===
-# Chemin complet vers l’image
+# === Paths ===
+# Full path to the image
 image_path = ...
 
-# Dossier de sortie des résultats
+# Output folder for results
 output_folder = os.path.join(os.path.dirname(__file__), '..', 'results')
 os.makedirs(output_folder, exist_ok=True)
 
-# === Chargement de l’image ===
+# === Load the image ===
 imge_Build = cv2.imread(image_path)
 if imge_Build is None:
-    print("[ERREUR] Image introuvable ou illisible :", image_path)
+    print("[ERROR] Image not found or unreadable:", image_path)
     sys.exit(1)
 else:
-    print("Image chargée avec succès :")
+    print("Image loaded successfully:")
 
-# === Prétraitement (Canny) ===
+# === Preprocessing (Canny) ===
 def ImgPreprocessing(imge, EdgesThresholdMin, EdgesThresholdMax):
     return cv2.Canny(imge, EdgesThresholdMin, EdgesThresholdMax, None, 3)
 
 img = ImgPreprocessing(imge_Build, EdgesThresholdMin, EdgesThresholdMax)
 
-# === Détection Hough Octogonale ===
+# === Application of POHT ===
 accum, accum_max, lines = HoughLineParallel.OctogonalP(img, gamma, Rate, Threshold, n_cpu)
 
-# === Affichage des résultats ===
+# === Display  results ===
 img2 = HoughLineParallel.PlotHoughLineP(imge_Build, lines, colors)
 cv2.imshow("Image affichée", img2)
-cv2.waitKey(0)  # attend une touche pour fermer la fenêtre
+cv2.waitKey(0)  
 cv2.destroyAllWindows()
 
-# === Sauvegarde des résultats ===
-filename_base = f'POHT_Building_R{int(Rate*100)}_T{Threshold}_G{gamma}_C{EdgesThresholdMin}-{EdgesThresholdMax}'
+# === Save results ===
+filename_base = f'POHT{int(Rate*100)}_T{Threshold}_G{gamma}_C{EdgesThresholdMin}-{EdgesThresholdMax}'
 
 cv2.imwrite(os.path.join(output_folder, filename_base + '_accum.png'), accum)
 cv2.imwrite(os.path.join(output_folder, filename_base + '_accum_max.png'), accum_max)
