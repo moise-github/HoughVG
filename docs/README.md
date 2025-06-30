@@ -122,7 +122,7 @@ cv2.imwrite(os.path.join(output_folder, filename_base + '_lines.png'), img2)
 
 print("Results saved in :", os.path.abspath(output_folder))
 ```
-### fingerprints recognition
+### Fingerprints recognition
 ```
 from HoughVG import Fingerprint
 # Paths
@@ -139,6 +139,38 @@ precision = 0
 
 # Run fingerprint matching
 matched = Fingerprint.fingerprint(
+test_path, 
+database_path, 
+length_threshold, 
+width_threshold, 
+rotation_threshold, 
+scale, 
+precision
+)
+
+# Display result
+if matched:
+    print("Fingerprint identified")
+else:
+    print("Fingerprint not identified")
+```
+### Fingerprints recognition using Virtual Grid
+```
+from HoughVG import Fingerprint
+# Paths
+test_path = "/home/moses/Bureau/Projet_HoughVG_software_impact_27_12_2024/data/fingerprint"
+database_path = "/home/moses/Bureau/Projet_HoughVG_software_impact_27_12_2024/data/Big_DB"
+
+# Threshold parameters
+length_threshold = 10
+width_threshold = 10
+rotation_threshold = 5
+
+scale = 3
+precision = 0
+
+# Run fingerprint matching
+matched = Fingerprint.fingerprint_VG(
 test_path, 
 database_path, 
 length_threshold, 
