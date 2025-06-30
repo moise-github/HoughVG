@@ -64,7 +64,7 @@ cv2.imwrite(os.path.join(output_folder, filename_base + '_accum.png'), accum)
 cv2.imwrite(os.path.join(output_folder, filename_base + '_accum_max.png'), accum_max)
 cv2.imwrite(os.path.join(output_folder, filename_base + '_lines.png'), img2)
 
-print("Résultats enregistrés dans :", os.path.abspath(output_folder))
+print("Results saved in:", os.path.abspath(output_folder))
 ```
 #### Parallised Octogonal Hough Transform (POHT)
 ```
@@ -120,7 +120,7 @@ cv2.imwrite(os.path.join(output_folder, filename_base + '_accum.png'), accum)
 cv2.imwrite(os.path.join(output_folder, filename_base + '_accum_max.png'), accum_max)
 cv2.imwrite(os.path.join(output_folder, filename_base + '_lines.png'), img2)
 
-print("Résultats enregistrés dans :", os.path.abspath(output_folder))
+print("Results saved in :", os.path.abspath(output_folder))
 ```
 ### fingerprints recognition
 ## Using GUI
