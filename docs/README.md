@@ -66,7 +66,7 @@ cv2.imwrite(os.path.join(output_folder, filename_base + '_lines.png'), img2)
 
 print("Results saved in:", os.path.abspath(output_folder))
 ```
-#### Parallised Octogonal Hough Transform (POHT)
+#### Parallelized Octogonal Hough Transform (POHT)
 ```
 import cv2
 import sys
@@ -186,7 +186,7 @@ if matched:
 else:
     print("Fingerprint not identified")
 ```
-### Parallised fingerprints recognition using Virtual Grid
+### Parallelized fingerprints recognition using Virtual Grid
 ```
 from HoughVG import Fingerprint
 # Paths
